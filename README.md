@@ -10,3 +10,7 @@ mkdir build
 cd build
 cmake ..
 ```
+
+If you are on Windows and using Visual Studio, the solution and project files will be generated. Otherwise, you 
+can run 
+`make` in the `build` directory. 
