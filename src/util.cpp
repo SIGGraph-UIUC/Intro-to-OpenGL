@@ -16,3 +16,40 @@ const char* read_shader(const std::string& shader_path) {
 
 	return code.c_str();
 }
+
+int compile_shader(const std::string& shader_path, GLenum type) {
+    int shader = glCreateShader(type);
+    const char* shader_code = read_shader(shader_path);
+    glShaderSource(shader, 1, &shader_code, NULL);
+    glCompileShader(shader);
+
+    char log[512];
+    int success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(shader, 512, NULL, log);
+        std::cerr << "Shader compilation failed: \n" << log << std::endl;
+    };
+
+    return shader;
+}
+
+int create_program(const std::string& vertex_path, const std::string& fragment_path) {
+    int vertex_shader = compile_shader(vertex_path, GL_VERTEX_SHADER);
+    int fragment_shader = compile_shader(fragment_path, GL_FRAGMENT_SHADER);
+
+    int program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    char log[512];
+    int success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, log);
+        std::cerr << "Shader program linking failed: \n" << log << std::endl;
+    }
+
+    return program;
+}
