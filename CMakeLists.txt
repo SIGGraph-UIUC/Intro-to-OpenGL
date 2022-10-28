@@ -15,8 +15,10 @@ set(GLAD_SOURCES
     extern/glad/src/glad.c)
 
 # Setup source code
+include_directories(include)
 set(MAIN_SOURCES
     src/main.cpp
+    src/util.cpp
 )
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${GLAD_SOURCES})
