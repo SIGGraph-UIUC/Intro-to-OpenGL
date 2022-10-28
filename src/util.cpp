@@ -1,6 +1,6 @@
 #include "util.h"
 
-const char* read_shader(const std::string& shader_path) {
+std::string read_shader(const std::string& shader_path) {
 	std::fstream file_stream;
 	std::stringstream string_stream;
 	std::string code;
@@ -14,13 +14,14 @@ const char* read_shader(const std::string& shader_path) {
 		std::cerr << "Failed to read shader" << std::endl;
 	}
 
-	return code.c_str();
+	return code;
 }
 
 int compile_shader(const std::string& shader_path, GLenum type) {
     int shader = glCreateShader(type);
-    const char* shader_code = read_shader(shader_path);
-    glShaderSource(shader, 1, &shader_code, NULL);
+    std::string shader_code = read_shader(shader_path);
+    const char* code = shader_code.c_str();
+    glShaderSource(shader, 1, &code, NULL);
     glCompileShader(shader);
 
     char log[512];
