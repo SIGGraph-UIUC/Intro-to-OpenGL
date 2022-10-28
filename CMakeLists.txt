@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.9.0)
-project(opengl_intro LANGUAGES CXX)
+project(opengl_intro)
 set(CMAKE_CXX_STANDARD 17)
 
 # Add GLFW
