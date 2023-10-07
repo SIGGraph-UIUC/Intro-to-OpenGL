@@ -13,9 +13,6 @@ void framebuffer_resize(GLFWwindow* window, int new_width, int new_height)
     glViewport(0, 0, new_width, new_height);
 }
 
-const std::string vertex_path = "C:\\Users\\JeffL\\Desktop\\Intro-to-OpenGL\\shaders\\vertex.glsl";
-const std::string fragment_path = "C:\\Users\\JeffL\\Desktop\\Intro-to-OpenGL\\shaders\\fragment.glsl";
-
 unsigned int create_triangle()
 {
     const float vertices[] = {-0.5f, -0.5f, 0.5f, -0.5f, 0.0f, 0.5f};
@@ -67,7 +64,7 @@ int main()
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_resize);
 
-    int shader_program = create_program(vertex_path, fragment_path);
+    int shader_program = create_program("vertex.glsl", "fragment.glsl");
     unsigned int vao = create_triangle();
 
     while(!glfwWindowShouldClose(window))

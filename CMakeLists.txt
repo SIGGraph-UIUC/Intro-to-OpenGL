@@ -24,3 +24,4 @@ set(MAIN_SOURCES
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${GLAD_SOURCES})
 target_link_libraries(${PROJECT_NAME}
                       glfw ${GLFW_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DSHADER_DIR="${CMAKE_SOURCE_DIR}/shaders")
