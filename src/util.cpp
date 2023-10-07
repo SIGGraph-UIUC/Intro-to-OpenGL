@@ -1,10 +1,15 @@
 #include "util.h"
 
-std::string read_shader(const std::string& shader_path) {
+std::filesystem::path shader_directory = SHADER_DIR;
+
+std::string read_shader(const std::string& shader_file) {
+    // CMake will define the shader directory path
+    std::filesystem::path shader_path = shader_directory / shader_file;
 	std::fstream file_stream;
 	std::stringstream string_stream;
 	std::string code;
 	try {
+        std::cout << "Compiling shader from " << shader_path.string() << std::endl;
 		file_stream.open(shader_path);
 		string_stream << file_stream.rdbuf();
 		file_stream.close();
@@ -17,9 +22,9 @@ std::string read_shader(const std::string& shader_path) {
 	return code;
 }
 
-int compile_shader(const std::string& shader_path, GLenum type) {
+int compile_shader(const std::string& shader_file, GLenum type) {
     int shader = glCreateShader(type);
-    std::string shader_code = read_shader(shader_path);
+    std::string shader_code = read_shader(shader_file);
     const char* code = shader_code.c_str();
     glShaderSource(shader, 1, &code, NULL);
     glCompileShader(shader);
