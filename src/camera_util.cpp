@@ -71,7 +71,7 @@ void Camera::handle_mouse(float x, float y, bool left_mouse_held) {
 
     if (left_mouse_held) {
         float delta_x = last_x - x;
-        float delta_y = y - last_y;
+        float delta_y = last_y - y;
 
         yaw_ += delta_x * sensitivity_;
         pitch_ = std::clamp(pitch_ + delta_y * sensitivity_, -89.0f, 89.0f);
