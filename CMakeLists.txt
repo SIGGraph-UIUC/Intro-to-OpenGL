@@ -14,6 +14,9 @@ include_directories(extern/glad/include)
 set(GLAD_SOURCES
     extern/glad/src/glad.c)
 
+# Add GLM
+include_directories(extern/glm)
+
 # Add tinyobjloader
 include_directories(extern/tinyobjloader)
 
@@ -23,6 +26,7 @@ set(MAIN_SOURCES
     src/main.cpp
     src/shader_util.cpp
     src/geometry_util.cpp
+    src/camera_util.cpp
 )
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${GLAD_SOURCES})
