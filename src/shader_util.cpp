@@ -1,4 +1,4 @@
-#include "util.h"
+#include "shader_util.h"
 
 std::filesystem::path shader_directory = SHADER_DIR;
 

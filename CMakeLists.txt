@@ -9,16 +9,20 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(extern/glfw)
 include_directories(extern/glfw/include)
 
-# Add GlAD
+# Add GLAD
 include_directories(extern/glad/include)
 set(GLAD_SOURCES
     extern/glad/src/glad.c)
+
+# Add tinyobjloader
+include_directories(extern/tinyobjloader)
 
 # Setup source code
 include_directories(include)
 set(MAIN_SOURCES
     src/main.cpp
-    src/util.cpp
+    src/shader_util.cpp
+    src/geometry_util.cpp
 )
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${GLAD_SOURCES})
