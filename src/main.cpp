@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "camera_util.h"
 #include "shader_util.h"
 
 const int width = 800;
@@ -15,7 +16,9 @@ void framebuffer_resize(GLFWwindow* window, int new_width, int new_height)
 
 unsigned int create_triangle()
 {
-    const float vertices[] = {-0.5f, -0.5f, 0.5f, -0.5f, 0.0f, 0.5f};
+    const float vertices[] = {-0.5f, -0.5f, 0.0f,
+                              0.5f, -0.5f, 0.0f, 
+                              0.0f, 0.5f, 0.0f};
     const int indices[] = { 0, 1, 2 };
 
     unsigned int vao = 0;
@@ -28,7 +31,7 @@ unsigned int create_triangle()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     unsigned int index_buffer = 0;
     glCreateBuffers(1, &index_buffer);
@@ -67,6 +70,8 @@ int main()
     int shader_program = create_program("vertex.glsl", "fragment.glsl");
     unsigned int vao = create_triangle();
 
+    Camera camera{ window, glm::vec3(0.0f, 0.0f, -1.0f), 0.0f, 0.0f, 10.0f, 0.1f };
+
     while(!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -75,9 +80,18 @@ int main()
         glUseProgram(shader_program);
         glBindVertexArray(vao);
 
+        glm::mat4 projection = camera.get_projection_matrix();
+        glm::mat4 view = camera.get_view_matrix();
+        glm::mat4 model = glm::mat4(1.0f);
+
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "projection"), 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_FALSE, &model[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_FALSE, &view[0][0]);
+
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         glfwPollEvents();
+        camera.handle_keys(0.0001f);
         glfwSwapBuffers(window);
     }
 
