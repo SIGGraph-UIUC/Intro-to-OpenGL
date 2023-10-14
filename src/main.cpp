@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "camera_util.h"
+#include "geometry_util.h"
 #include "shader_util.h"
 
 const int width = 800;
@@ -16,9 +17,9 @@ void framebuffer_resize(GLFWwindow* window, int new_width, int new_height)
 
 unsigned int create_triangle()
 {
-    const float vertices[] = {-0.5f, -0.5f, 0.0f,
-                              0.5f, -0.5f, 0.0f, 
-                              0.0f, 0.5f, 0.0f};
+    const float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                              0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+                              0.0f, 0.5f, 0.0f, 0.5f, 1.0f};
     const int indices[] = { 0, 1, 2 };
 
     unsigned int vao = 0;
@@ -31,7 +32,10 @@ unsigned int create_triangle()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (0 * sizeof(float)));
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (3 * sizeof(float)));
 
     unsigned int index_buffer = 0;
     glGenBuffers(1, &index_buffer);
@@ -72,6 +76,8 @@ int main()
 
     Camera camera{ window, glm::vec3(0.0f, 0.0f, -1.0f), 0.0f, 0.0f, 10.0f, 0.1f };
 
+    ImageTexture texture{ "fall_leaves.jpg" };
+
     while(!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -87,6 +93,9 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(shader.handle, "projection"), 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(shader.handle, "model"), 1, GL_FALSE, &model[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(shader.handle, "view"), 1, GL_FALSE, &view[0][0]);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.handle);
 
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
