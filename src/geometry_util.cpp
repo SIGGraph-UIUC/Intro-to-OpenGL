@@ -10,7 +10,6 @@ std::filesystem::path resource_directory = RESOURCES_DIR;
 
 ImageTexture::ImageTexture(const std::string& image_file) {
     // Create and configure texture handle
-    unsigned int handle;
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
 
