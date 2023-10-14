@@ -20,6 +20,9 @@ include_directories(extern/glm)
 # Add tinyobjloader
 include_directories(extern/tinyobjloader)
 
+# Add stb_image
+include_directories(extern/stb_image)
+
 # Setup source code
 include_directories(include)
 set(MAIN_SOURCES
