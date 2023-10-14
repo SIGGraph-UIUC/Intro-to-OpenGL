@@ -123,10 +123,9 @@ int main()
     unsigned int quad_vao = create_quad();
     std::array<unsigned int, 4> gbuffer = create_offscreen_framebuffer();
 
-    Camera camera{ window, glm::vec3(0.0f, 0.0f, -2.0f), 0.0f, 3.14f, 50.0f, 0.1f };
+    Camera camera{ window, glm::vec3(0.0f, 0.0f, 2.0f), 0.0f, 180.0f, 50.0f, 0.1f };
 
     ImageTexture diffuse{ "skull/skull_diffuse.jpg" };
-    ImageTexture normal{ "skull/skull_normal.jpg" };
     ObjMesh mesh{ "skull/skull.obj" };
 
     while(!glfwWindowShouldClose(window))
@@ -150,9 +149,6 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuse.handle);
         glUniform1i(glGetUniformLocation(shader.handle, "diffuse_texture"), 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normal.handle);
-        glUniform1i(glGetUniformLocation(shader.handle, "normal_texture"), 1);
 
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
@@ -161,6 +157,7 @@ int main()
 
         // Draw to the default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(deferred_shader.handle);
