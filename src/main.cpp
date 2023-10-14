@@ -64,7 +64,7 @@ int main()
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_resize);
 
-    int shader_program = create_program("vertex.glsl", "fragment.glsl");
+    Shader shader{ "vertex.glsl", "fragment.glsl" };
     unsigned int vao = create_triangle();
 
     while(!glfwWindowShouldClose(window))
@@ -72,7 +72,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_program);
+        glUseProgram(shader.handle);
         glBindVertexArray(vao);
 
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
