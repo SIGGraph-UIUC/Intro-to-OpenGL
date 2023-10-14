@@ -19,6 +19,7 @@ public:
 
     void recompute_vectors();
 
+    glm::vec3 get_pos() const;
     glm::mat4 get_view_matrix() const;
     glm::mat4 get_projection_matrix() const;
 
