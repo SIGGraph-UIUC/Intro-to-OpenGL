@@ -39,7 +39,7 @@ int main()
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_resize);
 
-    int shader_program = create_program("vertex.glsl", "fragment.glsl");
+    Shader shader{ "vertex.glsl", "fragment.glsl" };
 
     while(!glfwWindowShouldClose(window))
     {
