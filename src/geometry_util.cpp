@@ -24,6 +24,8 @@ ImageTexture::ImageTexture(const std::string& image_file) {
     stbi_set_flip_vertically_on_load(true);
     std::filesystem::path image_path = resource_directory / image_file;
     std::string path = image_path.string();
+    std::cout << "Loading image from " << path << std::endl;
+
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -44,6 +46,8 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
     std::string err;
     std::filesystem::path obj_path = resource_directory / obj_file;
     std::string path = obj_path.string();
+    std::cout << "Loading OBJ file from " << path << std::endl;
+
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
 
     if (!warn.empty()) {
