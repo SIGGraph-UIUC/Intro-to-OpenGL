@@ -22,11 +22,11 @@ unsigned int create_triangle()
     const int indices[] = { 0, 1, 2 };
 
     unsigned int vao = 0;
-    glCreateVertexArrays(1, &vao);
+    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
     unsigned int buffer = 0;
-    glCreateBuffers(1, &buffer);
+    glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -34,7 +34,7 @@ unsigned int create_triangle()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     unsigned int index_buffer = 0;
-    glCreateBuffers(1, &index_buffer);
+    glGenBuffers(1, &index_buffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
