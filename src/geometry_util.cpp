@@ -6,7 +6,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tinyobjloader.h>
 
-ImageTexture::ImageTexture(const std::string& image_path) {
+std::filesystem::path resource_directory = RESOURCES_DIR;
+
+ImageTexture::ImageTexture(const std::string& image_file) {
     // Create and configure texture handle
     unsigned int handle;
     glGenTextures(1, &handle);
@@ -20,7 +22,9 @@ ImageTexture::ImageTexture(const std::string& image_path) {
     // Load image into the texture if it's available
     int width, height, channels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
+    std::filesystem::path image_path = resource_directory / image_file;
+    std::string path = image_path.string();
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -31,14 +35,16 @@ ImageTexture::ImageTexture(const std::string& image_path) {
     stbi_image_free(data);
 }
 
-ObjMesh::ObjMesh(const std::string& obj_path) {
+ObjMesh::ObjMesh(const std::string& obj_file) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
     std::string warn;
     std::string err;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_path.c_str());
+    std::filesystem::path obj_path = resource_directory / obj_file;
+    std::string path = obj_path.string();
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
 
     if (!warn.empty()) {
         std::cout << "tinyobjloader warning: " << warn << std::endl;
