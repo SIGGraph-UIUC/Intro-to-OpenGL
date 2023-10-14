@@ -7,10 +7,14 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
+out vec3 vWorldPos;
 out vec2 vTexCoord;
 
 void main()
 {
-  gl_Position = projection * view * model * vec4(position, 1.0f);
+  vec4 world_space = model * vec4(position, 1.0f);
+  gl_Position = projection * view * world_space;
+
+  vWorldPos = world_space.xyz;
   vTexCoord = uv;
 }
