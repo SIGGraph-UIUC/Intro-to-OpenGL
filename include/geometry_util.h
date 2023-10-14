@@ -20,8 +20,23 @@ public:
 
 struct Vertex {
 	glm::vec3 position;
+	glm::vec3 normal;
 	glm::vec2 uv;
+
+	// Don't check normal equality because we incrementally update it
+	bool operator==(const Vertex& other) const {
+		return position == other.position && uv == other.uv;
+	}
 };
+
+namespace std {
+	template<> struct hash<Vertex> {
+		size_t operator()(Vertex const& vertex) const {
+			return ((hash<glm::vec3>()(vertex.position) ^
+				(hash<glm::vec2>()(vertex.uv) << 1)));
+		}
+	};
+}
 
 // Note that this is an extremely simplified version of a loader
 // that only loads the position and uvs for a single-mesh obj model.
@@ -33,6 +48,7 @@ public:
 	unsigned int handle;
 
 private:
+	unsigned int num_triangles;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 };

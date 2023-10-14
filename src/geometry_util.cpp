@@ -63,23 +63,47 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
     }
 
     // Assume that the entire model uses the same set of textures
+    std::unordered_map<Vertex, uint32_t> unique_vertices{};
     for (const auto& shape : shapes) {
-        for (const auto& index : shape.mesh.indices) {
-            Vertex vertex{};
+        for (size_t index = 0; index < shape.mesh.indices.size(); index += 3) {
+            Vertex triangle[3];
+            unsigned int triangle_indices[3];
+            for (int i = 0; i < 3; i++) {
+                tinyobj::index_t idx = shape.mesh.indices[index + i];
+                triangle[i].position = glm::vec3(attrib.vertices[3 * idx.vertex_index + 0],
+                                                 attrib.vertices[3 * idx.vertex_index + 1],
+                                                 attrib.vertices[3 * idx.vertex_index + 2]);
 
-            vertex.position = glm::vec3(attrib.vertices[3 * index.vertex_index + 0],
-                                        attrib.vertices[3 * index.vertex_index + 1],
-                                        attrib.vertices[3 * index.vertex_index + 2]);
+                triangle[i].uv = glm::vec2(attrib.texcoords[2 * idx.texcoord_index + 0],
+                                           attrib.texcoords[2 * idx.texcoord_index + 1]);
 
-            vertex.uv = glm::vec2(attrib.texcoords[2 * index.texcoord_index + 0],
-                                  attrib.texcoords[2 * index.texcoord_index + 1]);
+                triangle[i].normal = glm::vec3(0.0f, 0.0f, 0.0f);
 
-            indices.push_back(vertices.size());
-            vertices.push_back(vertex);
+                if (unique_vertices.count(triangle[i]) == 0) {
+                    unique_vertices[triangle[i]] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(triangle[i]);
+                }
+
+                triangle_indices[i] = unique_vertices[triangle[i]];
+                indices.push_back(unique_vertices[triangle[i]]);
+            }
+
+            glm::vec3 e1 = triangle[1].position - triangle[0].position;
+            glm::vec3 e2 = triangle[2].position - triangle[0].position;
+            glm::vec3 normal = glm::cross(e1, e2);
+
+            for (int i = 0; i < 3; i++) {
+                vertices[triangle_indices[i]].normal += normal;
+            }
         }
     }
 
-    std::cout << "Number of faces read from " << obj_file << ": " << indices.size() / 3 << std::endl;
+    for (Vertex& vertex : vertices) {
+        vertex.normal = glm::normalize(vertex.normal);
+    }
+
+    num_triangles = indices.size() / 3;
+    std::cout << "Number of faces read from " << obj_file << ": " << num_triangles << std::endl;
 
     // Configure the OpenGL handles
     glGenVertexArrays(1, &handle);
@@ -97,7 +121,10 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
     unsigned int index_buffer = 0;
     glGenBuffers(1, &index_buffer);
@@ -106,5 +133,5 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
 }
 
 unsigned int ObjMesh::get_num_vertices() const {
-    return vertices.size();
+    return 3 * num_triangles;
 }
