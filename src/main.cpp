@@ -116,7 +116,7 @@ int main()
     unsigned int quad_vao = create_quad();
     std::array<unsigned int, 4> gbuffer = create_offscreen_framebuffer();
 
-    Camera camera{ window, glm::vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f, 10.0f, 0.1f };
+    Camera camera{ window, glm::vec3(0.0f, 0.0f, -2.0f), 0.0f, 0.0f, 50.0f, 0.1f };
 
     ImageTexture diffuse{ "skull/skull_diffuse.jpg" };
     ImageTexture normal{ "skull/skull_normal.jpg" };
@@ -147,7 +147,7 @@ int main()
 
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
-        glDrawElements(GL_TRIANGLES, 3 * mesh.num_triangles, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh.get_num_vertices(), GL_UNSIGNED_INT, 0);
 
         // Draw to the default framebuffer now
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
