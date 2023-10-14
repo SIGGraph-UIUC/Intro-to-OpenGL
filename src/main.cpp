@@ -34,10 +34,10 @@ unsigned int create_quad()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (0 * sizeof(float)));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (0 * sizeof(float)));
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*) (2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*) (2 * sizeof(float)));
 
     unsigned int index_buffer = 0;
     glGenBuffers(1, &index_buffer);
@@ -82,6 +82,13 @@ std::array<unsigned int, 4> create_offscreen_framebuffer() {
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
 
+    // create and attach depth buffer (renderbuffer)
+    unsigned int depth;
+    glGenRenderbuffers(1, &depth);
+    glBindRenderbuffer(GL_RENDERBUFFER, depth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
+
     return std::array<unsigned int, 4>{fbo, position, normal, diffuse_specular};
 }
 
@@ -116,7 +123,7 @@ int main()
     unsigned int quad_vao = create_quad();
     std::array<unsigned int, 4> gbuffer = create_offscreen_framebuffer();
 
-    Camera camera{ window, glm::vec3(0.0f, 0.0f, -2.0f), 0.0f, 0.0f, 50.0f, 0.1f };
+    Camera camera{ window, glm::vec3(0.0f, 0.0f, -2.0f), 0.0f, 3.14f, 50.0f, 0.1f };
 
     ImageTexture diffuse{ "skull/skull_diffuse.jpg" };
     ImageTexture normal{ "skull/skull_normal.jpg" };
@@ -142,11 +149,14 @@ int main()
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuse.handle);
+        glUniform1i(glGetUniformLocation(shader.handle, "diffuse_texture"), 0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normal.handle);
+        glUniform1i(glGetUniformLocation(shader.handle, "normal_texture"), 1);
 
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
         glDrawElements(GL_TRIANGLES, mesh.get_num_vertices(), GL_UNSIGNED_INT, 0);
 
         // Draw to the default framebuffer now
@@ -155,19 +165,23 @@ int main()
 
         glUseProgram(deferred_shader.handle);
 
+        glm::vec3 camera_pos = camera.get_pos();
+        glUniform3fv(glGetUniformLocation(deferred_shader.handle, "viewPos"), 1, &camera_pos[0]);
+
         // Bind the gBuffer textures for use
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gbuffer[1]);
+        glUniform1i(glGetUniformLocation(deferred_shader.handle, "gWorldPos"), 0);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, gbuffer[2]);
+        glUniform1i(glGetUniformLocation(deferred_shader.handle, "gWorldNormal"), 1);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gbuffer[3]);
-
-        glm::vec3 camera_pos = camera.get_pos();
-        glUniform3f(glGetUniformLocation(deferred_shader.handle, "viewPos"), camera_pos.x, camera_pos.y, camera_pos.z);
+        glUniform1i(glGetUniformLocation(deferred_shader.handle, "gDiffuseSpecular"), 2);
 
         glBindVertexArray(quad_vao);
         glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwPollEvents();

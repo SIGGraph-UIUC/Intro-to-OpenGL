@@ -8,7 +8,7 @@ uniform sampler2D gDiffuseSpecular;
 
 in vec2 vTexCoord;
 
-const vec3 light_pos = vec3(0.0f, 0.0f, 0.0f);
+const vec3 light_pos = vec3(0.0f, 0.0f, 5.0f);
 const vec3 light_color = vec3(1.0f, 1.0f, 1.0f);
 const float light_intensity = 100.0f;
 
@@ -36,7 +36,7 @@ void main()
     float light_dist = length(light_pos - world_pos);
 
     // Ambient component
-    float ambient_value = 0.05f;
+    float ambient_value = 0.00f;
     vec3 ambient_color = light_color * diffuse * ambient_value;
 
     // Diffuse component
@@ -49,8 +49,8 @@ void main()
     vec3 specular_color = specular_value * specular * light_color;
 
     // Add components with attenuation
-    float attenuation = 1.0f / (1.0f + 0.5f * light_dist);
-    vec3 color = (diffuse_color + specular_color) * attenuation + ambient_color;
+    float attenuation = 1.0f; // (1.0f + 0.5f * light_dist);
+    vec3 color = (diffuse_color) * attenuation + ambient_color;
 
-    fragColor = vec4(color, 1.0f);
+    fragColor = vec4(normal, 1.0f);
 }
