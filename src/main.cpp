@@ -67,7 +67,7 @@ int main()
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_resize);
 
-    int shader_program = create_program("vertex.glsl", "fragment.glsl");
+    Shader shader{ "vertex.glsl", "fragment.glsl" };
     unsigned int vao = create_triangle();
 
     Camera camera{ window, glm::vec3(0.0f, 0.0f, -1.0f), 0.0f, 0.0f, 10.0f, 0.1f };
@@ -77,16 +77,16 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_program);
+        glUseProgram(shader.handle);
         glBindVertexArray(vao);
 
         glm::mat4 projection = camera.get_projection_matrix();
         glm::mat4 view = camera.get_view_matrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "projection"), 1, GL_FALSE, &projection[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"), 1, GL_FALSE, &model[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader.handle, "projection"), 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader.handle, "model"), 1, GL_FALSE, &model[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(shader.handle, "view"), 1, GL_FALSE, &view[0][0]);
 
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
