@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -12,7 +13,7 @@
 
 class ImageTexture {
 public:
-	ImageTexture(const std::string& image_path);
+	ImageTexture(const std::string& image_file);
 
 	unsigned int handle;
 };
@@ -40,7 +41,7 @@ namespace std {
 // that only loads the position and uvs for a single-mesh obj model.
 class ObjMesh {
 public:
-	ObjMesh(const std::string& obj_path);
+	ObjMesh(const std::string& obj_file);
 
 	unsigned int handle;
 	unsigned int num_triangles;
