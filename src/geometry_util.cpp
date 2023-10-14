@@ -64,8 +64,6 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
     }
 
     // Assume that the entire model uses the same set of textures
-    num_triangles = 0;
-    std::unordered_map<Vertex, unsigned int> unique_vertices;
     for (const auto& shape : shapes) {
         for (const auto& index : shapes[0].mesh.indices) {
             Vertex vertex{};
@@ -77,16 +75,12 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
             vertex.uv = glm::vec2(attrib.texcoords[index.texcoord_index + 0],
                 attrib.texcoords[index.texcoord_index + 1]);
 
-            if (unique_vertices.count(vertex) == 0) {
-                unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
-                vertices.push_back(vertex);
-            }
-
-            indices.push_back(unique_vertices[vertex]);
-            num_triangles++;
+            indices.push_back(vertices.size());
+            vertices.push_back(vertex);
         }
     }
-    num_triangles /= 3;
+
+    std::cout << "Number of faces read from " << obj_file << ": " << indices.size() / 3 << std::endl;
 
     // Configure the OpenGL handles
     glGenVertexArrays(1, &handle);
@@ -110,4 +104,8 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
     glGenBuffers(1, &index_buffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
+}
+
+unsigned int ObjMesh::get_num_vertices() const {
+    return vertices.size();
 }
