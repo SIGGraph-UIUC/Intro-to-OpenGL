@@ -65,15 +65,15 @@ ObjMesh::ObjMesh(const std::string& obj_file) {
 
     // Assume that the entire model uses the same set of textures
     for (const auto& shape : shapes) {
-        for (const auto& index : shapes[0].mesh.indices) {
+        for (const auto& index : shape.mesh.indices) {
             Vertex vertex{};
 
-            vertex.position = glm::vec3(attrib.vertices[index.vertex_index + 0],
-                attrib.vertices[index.vertex_index + 1],
-                attrib.vertices[index.vertex_index + 2]);
+            vertex.position = glm::vec3(attrib.vertices[3 * index.vertex_index + 0],
+                                        attrib.vertices[3 * index.vertex_index + 1],
+                                        attrib.vertices[3 * index.vertex_index + 2]);
 
-            vertex.uv = glm::vec2(attrib.texcoords[index.texcoord_index + 0],
-                attrib.texcoords[index.texcoord_index + 1]);
+            vertex.uv = glm::vec2(attrib.texcoords[2 * index.texcoord_index + 0],
+                                  attrib.texcoords[2 * index.texcoord_index + 1]);
 
             indices.push_back(vertices.size());
             vertices.push_back(vertex);
