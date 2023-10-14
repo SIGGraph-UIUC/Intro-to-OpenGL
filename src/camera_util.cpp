@@ -83,6 +83,10 @@ void Camera::handle_mouse(float x, float y, bool left_mouse_held) {
     last_y = y;
 }
 
+glm::vec3 Camera::get_pos() const {
+    return origin_;
+}
+
 glm::mat4 Camera::get_view_matrix() const {
     return glm::lookAt(origin_, origin_ + front_, world_up_);
 }
